@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Iniciar sesión | Centro de operaciones</title>
+	<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+	<header class="topbar">
+		<a class="brand" href="./index.html" aria-label="Volver al registro de incidentes">
+			<span class="brand-mark" aria-hidden="true">IO</span>
+			<span>Incidentes<span class="brand-subtitle">Centro de operaciones</span></span>
+		</a>
+	</header>
+	<main class="page-shell">
+		<section class="login-panel">
+			<p class="eyebrow">ACCESO SEGURO</p>
+			<h1>Iniciar sesión</h1>
+			<p class="muted">Usa tus credenciales para abrir el registro operativo.</p>
+			<form id="formLogin" class="login-form">
+				<label>Correo electrónico<input id="correo" name="correo" type="email" autocomplete="username" required></label>
+				<label>Contraseña<input id="clave" name="clave" type="password" autocomplete="current-password" required></label>
+				<button class="button button-primary" id="btnLogin" type="submit">Ingresar</button>
+			</form>
+			<p class="feedback" id="mensaje" role="status" aria-live="polite" hidden></p>
+			<a class="back-link" href="./index.html">Volver al registro</a>
+		</section>
+	</main>
+	<script type="module">
+		import { solicitar } from "./api.js";
+
+		const form = document.querySelector("#formLogin");
+		const button = document.querySelector("#btnLogin");
+		const message = document.querySelector("#mensaje");
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			message.hidden = true;
+			button.disabled = true;
+			button.textContent = "Ingresando...";
+			try {
+				const datos = await solicitar("/login", {
+					method: "POST",
+					body: JSON.stringify({
+						correo: form.elements.correo.value.trim(),
+						clave: form.elements.clave.value,
+					}),
+				});
+				sessionStorage.setItem("token", datos.token);
+				window.location.assign("./index.html");
+			} catch (error) {
+				message.textContent = error instanceof TypeError
+					? "No se pudo conectar con el servidor. Comprueba que esté iniciado."
+					: error.message;
+				message.className = "feedback feedback-error";
+				message.hidden = false;
+			} finally {
+				button.disabled = false;
+				button.textContent = "Ingresar";
+			}
+		});
+	</script>
+</body>
+</html>

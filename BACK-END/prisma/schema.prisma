@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Incidente {
+  id            Int     @id @default(autoincrement())
+  titulo        String
+  descripcion   String?
+  prioridad     String
+  estado        String  @default("abierto")
+  archivoRuta   String?
+  archivoNombre String?
+  archivoMime   String?
+}

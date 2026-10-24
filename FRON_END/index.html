@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#edf2ef">
+	<title>Incidentes | Centro de operaciones</title>
+	<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="./app.css">
+	<script type="module" src="./incidentes.js"></script>
+</head>
+<body>
+	<header class="topbar">
+		<a class="brand" href="./index.html" aria-label="Centro de operaciones, inicio">
+			<span class="brand-mark" aria-hidden="true">IO</span>
+			<span>Incidentes<span class="brand-subtitle">Centro de operaciones</span></span>
+		</a>
+		<div class="account-area" id="accountArea" hidden>
+			<span class="account-label" id="accountLabel"></span>
+			<button class="button button-quiet" id="logoutButton" type="button">Cerrar sesión</button>
+		</div>
+	</header>
+
+	<main class="page-shell">
+		<section class="access-state" id="accessState" aria-labelledby="accessTitle" hidden>
+			<p class="eyebrow">ACCESO REQUERIDO</p>
+			<h1 id="accessTitle">Inicia sesión para consultar los incidentes</h1>
+			<p>El registro está protegido. Ingresa con tu cuenta para continuar.</p>
+			<a class="button button-primary" href="./login.html">Iniciar sesión</a>
+		</section>
+
+		<div id="dashboard" hidden>
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">RESPUESTA A INCIDENTES</p>
+					<h1>Registro operativo</h1>
+					<p class="muted">Consulta, prioriza y actualiza los eventos de seguridad.</p>
+				</div>
+				<button class="button button-primary" id="newIncidentButton" type="button">
+					<span aria-hidden="true">+</span> Nuevo incidente
+				</button>
+			</section>
+
+			<section class="summary-grid" aria-label="Resumen de incidentes">
+				<article class="summary-item"><span class="summary-name">Total registrados</span><strong id="totalCount">0</strong></article>
+				<article class="summary-item"><span class="summary-name">Registrados</span><strong id="registeredCount">0</strong></article>
+				<article class="summary-item"><span class="summary-name">En revisión</span><strong id="reviewCount">0</strong></article>
+				<article class="summary-item summary-resolved"><span class="summary-name">Resueltos</span><strong id="resolvedCount">0</strong></article>
+			</section>
+
+			<p class="feedback" id="feedback" role="status" aria-live="polite" hidden></p>
+			<section class="registry" aria-labelledby="registryTitle">
+				<div class="registry-heading">
+					<div><h2 id="registryTitle">Incidentes</h2><p class="muted" id="resultCount">Cargando registro...</p></div>
+					<button class="button button-quiet" id="refreshButton" type="button">Actualizar</button>
+				</div>
+				<form class="filters" id="filterForm">
+					<label class="search-control"><span>Buscar</span><input id="searchInput" name="q" type="search" placeholder="Tipo de incidente"></label>
+					<label><span>Prioridad</span><select id="priorityFilter" name="prioridad"><option value="">Todas</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option><option value="Crítica">Crítica</option></select></label>
+					<label><span>Estado</span><select id="stateFilter" name="estado"><option value="">Todos</option><option value="Registrado">Registrado</option><option value="En revisión">En revisión</option><option value="Resuelto">Resuelto</option></select></label>
+				</form>
+				<div class="table-wrap">
+					<table>
+						<thead><tr><th scope="col">Incidente</th><th scope="col">Prioridad</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
+						<tbody id="incidentRows"></tbody>
+					</table>
+					<p class="empty-state" id="emptyState" hidden>No hay incidentes que coincidan con los filtros.</p>
+				</div>
+			</section>
+			<footer class="page-footer"><a href="./xss-demo.html">Abrir demostración de seguridad XSS</a></footer>
+		</div>
+	</main>
+
+	<dialog class="incident-dialog" id="incidentDialog" aria-labelledby="dialogTitle">
+		<form id="incidentForm">
+			<div class="dialog-heading"><div><p class="eyebrow">REGISTRO DE SEGURIDAD</p><h2 id="dialogTitle">Nuevo incidente</h2></div><button class="close-button" id="closeDialogButton" type="button" aria-label="Cerrar">×</button></div>
+			<label>Título del incidente<input name="titulo" type="text" maxlength="100" required placeholder="Ej. Acceso no autorizado"></label>
+			<label>Descripción<textarea name="descripcion" rows="4" maxlength="1200" placeholder="Describe el incidente (máximo 200 palabras)"></textarea></label>
+			<label>Imagen o video (opcional)<input id="incidentFile" name="archivo" type="file" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime"><span class="field-hint">JPG, PNG, GIF, WebP, MP4, WebM o MOV. Máximo 25 MB.</span></label>
+			<div class="attachment-preview" id="attachmentPreview" hidden></div>
+			<label>Prioridad<select name="prioridad" required><option value="Baja">Baja</option><option value="Media" selected>Media</option><option value="Alta">Alta</option><option value="Crítica">Crítica</option></select></label>
+			<label>Estado<select name="estado" required><option value="Registrado" selected>Registrado</option><option value="En revisión">En revisión</option><option value="Resuelto">Resuelto</option></select></label>
+			<div class="dialog-actions"><button class="button button-quiet" id="cancelDialogButton" type="button">Cancelar</button><button class="button button-primary" id="saveIncidentButton" type="submit">Guardar</button></div>
+		</form>
+	</dialog>
+</body>
+</html>

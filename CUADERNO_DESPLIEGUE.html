@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cuaderno de despliegue · Plataforma de incidentes</title>
+  <style>
+    :root {
+      --ink: #0d141c; --panel: #141d29; --panel-2: #1b2635; --line: #2a3547;
+      --signal: #45d6c4; --text: #e8eef5; --muted: #8ea0b8;
+      --good: #4fd08a; --warn: #f2ab4d; --danger: #f2726f; --code: #0a1017;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--ink); color: var(--text); font: 16px/1.6 "Segoe UI", sans-serif; }
+    h1, h2, h3 { margin: 0 0 .55rem; font-family: "Trebuchet MS", sans-serif; }
+    a { color: #8fe9df; }
+    .topbar { position: sticky; top: 0; z-index: 2; padding: .8rem 1.2rem; border-bottom: 1px solid var(--line); background: var(--panel); }
+    .topbar-inner, main { width: min(1100px, calc(100% - 2rem)); margin: auto; }
+    .topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .brand { color: var(--signal); font-weight: 700; }
+    .progress { color: var(--muted); font-family: monospace; font-size: .8rem; }
+    .bar { display: inline-block; width: 110px; height: 6px; margin-left: .4rem; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); overflow: hidden; vertical-align: middle; }
+    .bar span { display: block; height: 100%; width: 0; background: var(--signal); transition: width .2s; }
+    main { padding: 2.2rem 0 5rem; }
+    .hero, .step { padding: 1.4rem; margin-bottom: 1.2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 12px 30px -18px #000; }
+    .hero { border-left: 4px solid var(--signal); }
+    .kicker, .label { color: var(--signal); font: 700 .78rem monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .badges { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .badge { padding: .25rem .55rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font: .78rem monospace; }
+    .index { display: grid; gap: .45rem; margin: 1.2rem 0 0; padding: 0; list-style: none; }
+    .index a { display: block; padding: .45rem .65rem; border: 1px solid var(--line); border-radius: 6px; color: var(--text); text-decoration: none; background: var(--panel-2); }
+    .step { scroll-margin-top: 75px; }
+    .step h2 { font-size: 1.25rem; }
+    .step p, .step li { max-width: 78ch; }
+    .callout { margin: 1rem 0; padding: .85rem 1rem; border-left: 4px solid var(--warn); background: #2a2630; }
+    .callout.good { border-color: var(--good); }
+    .callout.danger { border-color: var(--danger); }
+    pre { position: relative; overflow-x: auto; margin: .8rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--code); color: #d7e8ed; }
+    code, pre { font-family: Consolas, monospace; font-size: .86rem; }
+    .copy { float: right; padding: .25rem .5rem; border: 1px solid var(--line); border-radius: 4px; color: var(--text); background: var(--panel-2); cursor: pointer; }
+    .url-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+    .url-card { padding: 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+    .url-card strong { display: block; margin-bottom: .25rem; color: var(--signal); }
+    .check { display: flex; gap: .55rem; align-items: flex-start; margin-top: 1rem; color: var(--muted); font-family: monospace; font-size: .85rem; }
+    .check input { accent-color: var(--good); }
+    .result { padding: .8rem; border: 1px solid var(--line); background: var(--code); font-family: monospace; }
+    @media (max-width: 680px) { .url-choice { grid-template-columns: 1fr; } .topbar-inner { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">IO · Cuaderno de despliegue</div>
+      <div class="progress"><span id="progressText">0/8 pasos</span><span class="bar"><span id="progressBar"></span></span></div>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="kicker">Unidad 8 · Plataforma de incidentes</div>
+      <h1>De tu computadora a Render</h1>
+      <p>Este cuaderno adapta la práctica guiada a la estructura real del proyecto: <code>BACK-END/</code>, <code>FRON_END/</code>, Prisma, PostgreSQL, GitHub Actions y Render.</p>
+      <div class="badges">
+        <span class="badge">Backend Express</span><span class="badge">PostgreSQL existente</span>
+        <span class="badge">Prisma migrations</span><span class="badge">CI/CD</span>
+      </div>
+      <div class="callout good"><strong>Regla de URLs:</strong> External para conectar desde tu computadora; Internal para conectar el Web Service de Render con la base de Render.</div>
+      <ol class="index">
+        <li><a href="#paso-0">00 · Revisar el proyecto</a></li>
+        <li><a href="#paso-1">01 · Confirmar la base PostgreSQL</a></li>
+        <li><a href="#paso-2">02 · Configurar localmente</a></li>
+        <li><a href="#paso-3">03 · Subir el código a GitHub</a></li>
+        <li><a href="#paso-4">04 · Crear el Web Service en Render</a></li>
+        <li><a href="#paso-5">05 · Configurar variables y desplegar</a></li>
+        <li><a href="#paso-6">06 · Verificar la producción</a></li>
+        <li><a href="#paso-7">07 · Activar el despliegue continuo</a></li>
+      </ol>
+    </section>
+
+    <section class="step" id="paso-0">
+      <div class="label">Paso 0 · Preparación</div><h2>Revisar el proyecto</h2>
+      <p>Abre la carpeta del proyecto en VS Code y confirma que existen los archivos de despliegue.</p>
+      <pre><button class="copy" data-copy="cmd0">Copiar</button><code id="cmd0">BACK-END/
+  package.json
+  prisma/schema.prisma
+  prisma/migrations/
+FRON_END/
+render.yaml
+.github/workflows/ci-cd.yml</code></pre>
+      <p>No subas <code>BACK-END/.env</code>, certificados privados ni archivos de <code>uploads</code>.</p>
+      <label class="check"><input type="checkbox" data-step="0"> Marcar paso completado</label>
+    </section>
+
+    <section class="step" id="paso-1">
+      <div class="label">Paso 1 · Base de datos</div><h2>Confirmar tu PostgreSQL existente</h2>
+      <p>En Render abre tu PostgreSQL y localiza las dos URLs de conexión. No las publiques ni las envíes por chat.</p>
+      <div class="url-choice">
+        <div class="url-card"><strong>External Database URL</strong>Se usa únicamente en tu computadora, pruebas locales o herramientas externas. <b>No la uses en el Web Service de Render.</b></div>
+        <div class="url-card"><strong>Internal Database URL</strong>Se usa en la variable <code>DATABASE_URL</code> del Web Service de Render. Esta es la que debes ingresar en el Paso 5.</div>
+      </div>
+      <label class="check"><input type="checkbox" data-step="1"> Ya localicé ambas URLs sin compartirlas</label>
+    </section>
+
+    <section class="step" id="paso-2">
+      <div class="label">Paso 2 · Configuración local</div><h2>Probar desde tu computadora</h2>
+      <p>En <code>BACK-END/.env</code>, si quieres probar contra Render desde tu PC, ingresa aquí la <b>External Database URL</b>. Para producción no copies este archivo al repositorio.</p>
+      <pre><button class="copy" data-copy="env0">Copiar</button><code id="env0">DATABASE_URL=&lt;External Database URL, solo si pruebas localmente&gt;
+JWT_SECRET=&lt;secreto local&gt;
+NODE_ENV=development
+ORIGEN_FRONTEND=</code></pre>
+      <pre><button class="copy" data-copy="cmd1">Copiar</button><code id="cmd1">cd BACK-END
+npm ci
+npx prisma generate
+npx prisma migrate deploy
+npm run lint</code></pre>
+      <div class="callout danger"><strong>No pegues la Internal ni la External URL en GitHub.</strong> Ambas contienen credenciales.</div>
+      <label class="check"><input type="checkbox" data-step="2"> La configuración local y el lint terminaron correctamente</label>
+    </section>
+
+    <section class="step" id="paso-3">
+      <div class="label">Paso 3 · GitHub</div><h2>Subir el proyecto sin secretos</h2>
+      <p>Crea un repositorio vacío y sube el proyecto desde su raíz. El workflow ejecutará las pruebas con una base PostgreSQL temporal.</p>
+      <pre><button class="copy" data-copy="cmd2">Copiar</button><code id="cmd2">git init -b main
+git add .
+git commit -m "Preparar despliegue de plataforma de incidentes"
+git remote add origin https://github.com/&lt;usuario&gt;/&lt;repositorio&gt;.git
+git push -u origin main</code></pre>
+      <label class="check"><input type="checkbox" data-step="3"> GitHub muestra el código, pero no muestra .env ni node_modules</label>
+    </section>
+
+    <section class="step" id="paso-4">
+      <div class="label">Paso 4 · Render</div><h2>Crear el Web Service</h2>
+      <ol>
+        <li>En Render selecciona <b>New + → Web Service</b>.</li>
+        <li>Conecta el repositorio de GitHub.</li>
+        <li>Si Render detecta el Blueprint, usa <code>render.yaml</code>. Si lo configuras manualmente, usa estos valores:</li>
+      </ol>
+      <pre><code>Root Directory: BACK-END
+Build Command: npm ci && npx prisma generate && npx prisma migrate deploy
+Start Command: npm start
+Health Check Path: /salud</code></pre>
+      <label class="check"><input type="checkbox" data-step="4"> El Web Service está creado y apunta a BACK-END</label>
+    </section>
+
+    <section class="step" id="paso-5">
+      <div class="label">Paso 5 · Variables de Render</div><h2>Este es el momento de ingresar la URL</h2>
+      <p>En Render abre el Web Service → <b>Environment</b> → <b>Environment Variables</b>. Aquí debes ingresar la <b>Internal Database URL</b> de tu PostgreSQL existente.</p>
+      <pre><code>DATABASE_URL=&lt;Internal Database URL de tu base existente&gt;
+NODE_ENV=production
+JWT_SECRET=&lt;secreto largo y privado&gt;
+ORIGEN_FRONTEND=</code></pre>
+      <div class="callout good"><strong>Respuesta directa:</strong> la <b>Internal Database URL</b> se ingresa aquí, en <code>DATABASE_URL</code> del Web Service de Render. La <b>External Database URL</b> solo se usa desde fuera de Render.</div>
+      <p>Deja <code>ORIGEN_FRONTEND</code> vacío si el frontend se sirve desde este mismo servicio. Si lo publicas en Vercel, escribe su URL completa, por ejemplo <code>https://mi-frontend.vercel.app</code>.</p>
+      <label class="check"><input type="checkbox" data-step="5"> Guardé las variables y seleccioné Manual Deploy → Deploy latest commit</label>
+    </section>
+
+    <section class="step" id="paso-6">
+      <div class="label">Paso 6 · Verificación</div><h2>Comprobar producción</h2>
+      <p>Cuando Render termine el despliegue, abre la URL pública:</p>
+      <pre><code>https://&lt;tu-servicio&gt;.onrender.com/salud</code></pre>
+      <p>La respuesta correcta es:</p>
+      <div class="result">{ "estado": "ok", "baseDeDatos": "conectada" }</div>
+      <p>Después inicia sesión y prueba crear, editar, filtrar y eliminar un incidente. La eliminación requiere un usuario administrador.</p>
+      <label class="check"><input type="checkbox" data-step="6"> /salud responde correctamente y el CRUD funciona en producción</label>
+    </section>
+
+    <section class="step" id="paso-7">
+      <div class="label">Paso 7 · CD</div><h2>Activar despliegue continuo</h2>
+      <p>En Render crea un <b>Deploy Hook</b>. En GitHub ve a <b>Settings → Secrets and variables → Actions</b> y agrega:</p>
+      <pre><code>RENDER_DEPLOY_HOOK=&lt;URL privada del Deploy Hook&gt;</code></pre>
+      <p>Cada push a <code>main</code> ejecutará PostgreSQL temporal, migraciones, pruebas y lint. Solo si todo pasa, Actions solicitará el despliegue en Render.</p>
+      <label class="check"><input type="checkbox" data-step="7"> El workflow está en verde y el Deploy Hook es un secreto de GitHub</label>
+    </section>
+  </main>
+  <script>
+    const checks = [...document.querySelectorAll("[data-step]")];
+    const progressText = document.querySelector("#progressText");
+    const progressBar = document.querySelector("#progressBar");
+    function update() {
+      const done = checks.filter((check) => check.checked).length;
+      progressText.textContent = `${done}/${checks.length} pasos`;
+      progressBar.style.width = `${done / checks.length * 100}%`;
+      localStorage.setItem("cuaderno-incidentes", JSON.stringify(checks.map((check) => check.checked)));
+    }
+    try {
+      const saved = JSON.parse(localStorage.getItem("cuaderno-incidentes") || "[]");
+      checks.forEach((check, index) => { check.checked = saved[index] === true; });
+    } catch (error) {
+      console.warn("No se pudo cargar el progreso del cuaderno:", error);
+    }
+    checks.forEach((check) => check.addEventListener("change", update));
+    document.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(document.querySelector(`#${button.dataset.copy}`).textContent);
+      button.textContent = "Copiado";
+      setTimeout(() => { button.textContent = "Copiar"; }, 1200);
+    }));
+    update();
+  </script>
+</body>
+</html>

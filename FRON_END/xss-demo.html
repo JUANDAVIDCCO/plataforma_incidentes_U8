@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demostración XSS</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./index.html"><span class="brand-mark" aria-hidden="true">IO</span><span>Incidentes<span class="brand-subtitle">Demostración de seguridad</span></span></a></header>
+  <main class="page-shell">
+    <section class="login-panel">
+      <p class="eyebrow">PRÁCTICA DE SEGURIDAD</p>
+      <h1>textContent frente a innerHTML</h1>
+      <p class="muted">Compara cómo se presenta una entrada no confiable en cada destino.</p>
+      <label class="demo-label" for="entrada">Entrada de prueba</label>
+      <input id="entrada" class="demo-input" type="text" value="&lt;img src=x onerror=&quot;alert('Ejecutado como código')&quot;&gt;">
+      <div class="demo-actions"><button class="button button-primary" id="btnInner" type="button">Mostrar con innerHTML</button><button class="button button-quiet" id="btnText" type="button">Mostrar con textContent</button></div>
+      <h2>Salida innerHTML</h2><div id="salidaInner" class="demo-output"></div>
+      <h2>Salida textContent</h2><div id="salidaText" class="demo-output"></div>
+      <a class="back-link" href="./index.html">Volver al registro</a>
+    </section>
+  </main>
+  <script>
+    document.querySelector("#btnInner").addEventListener("click", () => {
+      document.querySelector("#salidaInner").innerHTML = document.querySelector("#entrada").value;
+    });
+    document.querySelector("#btnText").addEventListener("click", () => {
+      document.querySelector("#salidaText").textContent = document.querySelector("#entrada").value;
+    });
+  </script>
+</body>
+</html>

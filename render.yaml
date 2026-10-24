@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: plataforma-incidentes
+    runtime: node
+    rootDir: BACK-END
+    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /salud
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: ORIGEN_FRONTEND
+        value: ""

@@ -1,0 +1,9 @@
+BACK-END/.env
+BACK-END/node_modules/
+BACK-END/certs/*.pfx
+BACK-END/certs/*.key
+BACK-END/certs/*.cer
+BACK-END/uploads/*
+!BACK-END/uploads/.gitkeep
+BACK-END/.agents/
+backend/
